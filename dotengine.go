@@ -1,6 +1,6 @@
 package dotengine
 
-// date     :=  2016-06-28
+// date     :=  2016-12-24
 // auther   :=  notedit
 
 import (
@@ -17,7 +17,7 @@ import (
 
 const (
 	DefaultExpires = 3600 * 24
-	apiUrl         = "https://api.dot.cc/"
+	apiUrl         = "http://api.dot.cc/"
 	apiCreateToken = "createToken"
 )
 
@@ -70,7 +70,7 @@ func (dot *DotEngine) Token(room, userID string, expires int) (*Token, error) {
 		return nil, err
 	}
 
-	tokenData, err := jose.Sign(payload, jose.HS256, dot.AppSecret())
+	tokenData, err := jose.SignBytes(payload, jose.HS256, dot.AppSecret())
 
 	if err != nil {
 		log.Println("jwt token generate error")
