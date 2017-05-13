@@ -1,14 +1,22 @@
 package dotengine
 
-import "testing"
+
+import  (
+    "testing"
+    "log"
+)
 
 func TestGetToken(t *testing.T) {
 
 	dotEngine := New("dotcc", "dotcc")
 
-	tokenInfo, _ := dotEngine.Token("room", "userid", DefaultExpires)
+	tokenInfo, err := dotEngine.Token("room", "userid", DefaultExpires)
 
-	if tokenInfo == nil {
+    log.Println(err)
+
+    log.Println(tokenInfo)
+
+	if err != nil {
 		t.Fail()
 	}
 

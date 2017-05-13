@@ -4,13 +4,12 @@ package dotengine
 // auther   :=  notedit
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
-	"net/url"
-	"strings"
 
 	"github.com/dvsekhvalnov/jose2go"
 )
@@ -57,11 +56,11 @@ func (dot *DotEngine) Token(room, userID string, expires int) (*Token, error) {
 
 	token := map[string]interface{}{
 		"room":    room,
-		"user": userID,
-		"expires":  expires,
+		"user":    userID,
+		"expires": expires,
 		"role":    "",
 		"nonce":   rand.Intn(9999999),
-		"appkey": dot.AppKey(),
+		"appkey":  dot.AppKey(),
 	}
 
 	payload, err := json.Marshal(token)
@@ -70,19 +69,19 @@ func (dot *DotEngine) Token(room, userID string, expires int) (*Token, error) {
 		return nil, err
 	}
 
-	tokenData, err := jose.SignBytes(payload, jose.HS256, dot.AppSecret())
+	tokenData, err := jose.SignBytes(payload, jose.HS256, []byte(dot.AppSecret()))
 
 	if err != nil {
 		log.Println("jwt token generate error")
 		return nil, err
 	}
 
-	params := url.Values{}
+	values := map[string]string{"sign": tokenData, "appkey": dot.AppKey()}
 
-	params.Add("sign", tokenData)
-	params.Add("appkey", dot.AppKey())
+	jsonValue, _ := json.Marshal(values)
 
-	req, err := http.NewRequest("POST", apiUrl+apiCreateToken, strings.NewReader(params.Encode()))
+	req, err := http.NewRequest("POST", apiUrl+apiCreateToken, bytes.NewBuffer(jsonValue))
+    req.Header.Set("Content-Type", "application/json")
 
 	if err != nil {
 		return nil, err
@@ -108,6 +107,6 @@ func (dot *DotEngine) Token(room, userID string, expires int) (*Token, error) {
 		return nil, err
 	}
 
-	return &tokenRes, nil
+	return &tokenRes.Token, nil
 
 }
