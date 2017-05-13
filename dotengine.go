@@ -1,6 +1,6 @@
 package dotengine
 
-// date     :=  2016-12-24
+// date     :=  2017-05-13
 // auther   :=  notedit
 
 import (
@@ -17,7 +17,7 @@ import (
 
 const (
 	DefaultExpires = 3600 * 24
-	apiUrl         = "http://api.dot.cc/"
+	apiUrl         = "https://janus.dot.cc/api/"
 	apiCreateToken = "createToken"
 )
 
@@ -57,11 +57,11 @@ func (dot *DotEngine) Token(room, userID string, expires int) (*Token, error) {
 
 	token := map[string]interface{}{
 		"room":    room,
-		"user_id": userID,
-		"expres":  expires,
+		"user": userID,
+		"expires":  expires,
 		"role":    "",
 		"nonce":   rand.Intn(9999999),
-		"app_key": dot.AppKey(),
+		"appkey": dot.AppKey(),
 	}
 
 	payload, err := json.Marshal(token)
@@ -80,7 +80,7 @@ func (dot *DotEngine) Token(room, userID string, expires int) (*Token, error) {
 	params := url.Values{}
 
 	params.Add("sign", tokenData)
-	params.Add("app_key", dot.AppKey())
+	params.Add("appkey", dot.AppKey())
 
 	req, err := http.NewRequest("POST", apiUrl+apiCreateToken, strings.NewReader(params.Encode()))
 
@@ -108,6 +108,6 @@ func (dot *DotEngine) Token(room, userID string, expires int) (*Token, error) {
 		return nil, err
 	}
 
-	return &tokenRes.Token, nil
+	return &tokenRes, nil
 
 }

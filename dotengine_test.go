@@ -6,9 +6,9 @@ func TestGetToken(t *testing.T) {
 
 	dotEngine := New("dotcc", "dotcc")
 
-	token, _ := dotEngine.Token("room", "userid", DefaultExpires)
+	tokenInfo, _ := dotEngine.Token("room", "userid", DefaultExpires)
 
-	if token == nil {
+	if tokenInfo == nil {
 		t.Fail()
 	}
 
